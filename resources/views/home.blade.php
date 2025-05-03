@@ -5,7 +5,10 @@
     <!-- Status Message -->
     @if($status)
     <div class="alert alert-success alert-dismissible fade show" role="alert" id="statusAlert">
-        {{ $status }}
+        <div class="d-flex align-items-center">
+            <i class="fas fa-check-circle me-2"></i>
+            <div>{{ $status }}</div>
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
@@ -17,8 +20,10 @@
             <p class="text-muted">Here's what's happening in your restaurant today.</p>
         </div>
         <div class="text-end">
-            <p class="mb-0" id="currentTime"></p>
-            <p class="text-muted mb-0" id="currentDate"></p>
+            <div class="clock-container">
+                <div class="clock-time" id="currentTime"></div>
+                <div class="clock-date" id="currentDate"></div>
+            </div>
         </div>
     </div>
 
@@ -36,7 +41,10 @@
                             <h2 class="card-title mb-0 display-6">{{ $totalItems }}</h2>
                         </div>
                     </div>
-                    <p class="mb-0 text-success">
+                    <div class="progress mt-3" style="height: 4px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 75%"></div>
+                    </div>
+                    <p class="mb-0 text-success mt-2">
                         <i class="fas fa-box-open me-1"></i>
                         Inventory Items
                     </p>
@@ -55,7 +63,10 @@
                             <h2 class="card-title mb-0 display-6">{{ $totalProducts }}</h2>
                         </div>
                     </div>
-                    <p class="mb-0 text-success">
+                    <div class="progress mt-3" style="height: 4px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
+                    </div>
+                    <p class="mb-0 text-success mt-2">
                         <i class="fas fa-utensils me-1"></i>
                         Available Products
                     </p>
@@ -74,7 +85,10 @@
                             <h2 class="card-title mb-0 display-6">{{ $activeProducts }}</h2>
                         </div>
                     </div>
-                    <p class="mb-0 text-info">
+                    <div class="progress mt-3" style="height: 4px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 65%"></div>
+                    </div>
+                    <p class="mb-0 text-info mt-2">
                         <i class="fas fa-clock me-1"></i>
                         Currently Active
                     </p>
@@ -93,7 +107,10 @@
                             <h2 class="card-title mb-0 display-6">{{ $totalCategories }}</h2>
                         </div>
                     </div>
-                    <p class="mb-0 text-warning">
+                    <div class="progress mt-3" style="height: 4px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 45%"></div>
+                    </div>
+                    <p class="mb-0 text-warning mt-2">
                         <i class="fas fa-layer-group me-1"></i>
                         Item Categories
                     </p>
@@ -112,9 +129,17 @@
                         <p class="text-muted small mb-0">Last 6 months activity</p>
                     </div>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="exportChart">
                             <i class="fas fa-download me-1"></i> Export
                         </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-period="week">Last Week</a></li>
+                            <li><a class="dropdown-item" href="#" data-period="month">Last Month</a></li>
+                            <li><a class="dropdown-item" href="#" data-period="year">Last Year</a></li>
+                        </ul>
                     </div>
                 </div>
                 <div class="card-body">
@@ -148,32 +173,44 @@
                         <div class="col-md-3">
                             <a href="{{ url('/admin/items/create') }}" class="text-decoration-none">
                                 <div class="quick-action-card bg-primary bg-opacity-10 rounded p-4 text-center zoom-on-hover">
-                                    <i class="fas fa-plus-circle fa-2x text-primary mb-3"></i>
-                                    <h6 class="mb-0 text-primary">Add New Item</h6>
+                                    <div class="action-icon">
+                                        <i class="fas fa-plus-circle fa-2x text-primary"></i>
+                                    </div>
+                                    <h6 class="mb-0 text-primary mt-3">Add New Item</h6>
+                                    <small class="text-muted">Add inventory items</small>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="{{ url('/admin/production/create') }}" class="text-decoration-none">
                                 <div class="quick-action-card bg-success bg-opacity-10 rounded p-4 text-center zoom-on-hover">
-                                    <i class="fas fa-pizza-slice fa-2x text-success mb-3"></i>
-                                    <h6 class="mb-0 text-success">Create Product</h6>
+                                    <div class="action-icon">
+                                        <i class="fas fa-pizza-slice fa-2x text-success"></i>
+                                    </div>
+                                    <h6 class="mb-0 text-success mt-3">Create Product</h6>
+                                    <small class="text-muted">Add new products</small>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="{{ url('/admin/categories/create') }}" class="text-decoration-none">
                                 <div class="quick-action-card bg-info bg-opacity-10 rounded p-4 text-center zoom-on-hover">
-                                    <i class="fas fa-tags fa-2x text-info mb-3"></i>
-                                    <h6 class="mb-0 text-info">Add Category</h6>
+                                    <div class="action-icon">
+                                        <i class="fas fa-tags fa-2x text-info"></i>
+                                    </div>
+                                    <h6 class="mb-0 text-info mt-3">Add Category</h6>
+                                    <small class="text-muted">Create new categories</small>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3">
                             <a href="{{ url('/admin/role/create') }}" class="text-decoration-none">
                                 <div class="quick-action-card bg-warning bg-opacity-10 rounded p-4 text-center zoom-on-hover">
-                                    <i class="fas fa-user-plus fa-2x text-warning mb-3"></i>
-                                    <h6 class="mb-0 text-warning">Add Role</h6>
+                                    <div class="action-icon">
+                                        <i class="fas fa-user-plus fa-2x text-warning"></i>
+                                    </div>
+                                    <h6 class="mb-0 text-warning mt-3">Add Role</h6>
+                                    <small class="text-muted">Create user roles</small>
                                 </div>
                             </a>
                         </div>
@@ -192,19 +229,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.stats-icon:hover {
+    transform: scale(1.1);
 }
 
 .zoom-on-hover {
-    transition: transform 0.2s ease-in-out;
+    transition: all 0.3s ease;
 }
 
 .zoom-on-hover:hover {
     transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 .quick-action-card {
     transition: all 0.3s ease;
     cursor: pointer;
+    height: 100%;
 }
 
 .quick-action-card:hover {
@@ -212,9 +256,52 @@
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
+.action-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.quick-action-card:hover .action-icon {
+    transform: scale(1.1);
+}
+
 .display-6 {
     font-size: 1.8rem;
     font-weight: 600;
+}
+
+.clock-container {
+    background: rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.clock-time {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.clock-date {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.progress {
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 2px;
+}
+
+.progress-bar {
+    transition: width 1s ease-in-out;
 }
 </style>
 
@@ -251,7 +338,7 @@
 
         // Monthly Products Chart
         const salesCtx = document.getElementById('salesChart').getContext('2d');
-        new Chart(salesCtx, {
+        const salesChart = new Chart(salesCtx, {
             type: 'line',
             data: {
                 labels: {!! json_encode(array_column($monthlySales, 'month')) !!},
@@ -273,6 +360,10 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
                 scales: {
                     y: {
                         beginAtZero: true,
@@ -301,6 +392,17 @@
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 12,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 12
+                        }
                     }
                 }
             }
@@ -308,7 +410,7 @@
 
         // Product Status Chart
         const orderCtx = document.getElementById('orderStatusChart').getContext('2d');
-        new Chart(orderCtx, {
+        const orderChart = new Chart(orderCtx, {
             type: 'doughnut',
             data: {
                 labels: ['Inactive', 'Active'],
@@ -341,9 +443,40 @@
                                 size: 12
                             }
                         }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 12,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 12
+                        }
                     }
                 }
             }
+        });
+
+        // Chart period selector
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const period = this.dataset.period;
+                // Here you would typically make an AJAX call to get new data
+                // For now, we'll just update the chart title
+                document.querySelector('.card-header h5').textContent = 
+                    `Products Overview - Last ${period.charAt(0).toUpperCase() + period.slice(1)}`;
+            });
+        });
+
+        // Export chart
+        document.getElementById('exportChart').addEventListener('click', function() {
+            const link = document.createElement('a');
+            link.download = 'products-overview.png';
+            link.href = salesChart.toBase64Image();
+            link.click();
         });
     });
 </script>

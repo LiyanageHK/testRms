@@ -28,7 +28,7 @@ class ProductCategoryController extends Controller
             $request->input('name')
         ]);
 
-        return redirect()->back()->with('success', 'Category added!');
+        return redirect('admin/productcategories')->with('success', 'Category added!');
     }
 
     // Show edit form
@@ -46,7 +46,7 @@ class ProductCategoryController extends Controller
             $id
         ]);
 
-        return redirect()->back()->with('success', 'Category updated!');
+        return redirect('admin/productcategories')->with('success', 'Category updated!');
     }
 
     // Delete category

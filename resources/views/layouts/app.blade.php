@@ -15,7 +15,94 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- AdminLTE -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css"> 
+    
+    <style>
+        .profile-dropdown {
+            min-width: 200px;
+        }
+        
+        .profile-dropdown .dropdown-header {
+            background: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .profile-dropdown .user-info {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .profile-dropdown .dropdown-item {
+            padding: 8px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-dropdown .dropdown-item:hover {
+            background-color: #f8f9fa;
+            padding-left: 20px;
+        }
+        
+        .profile-dropdown .dropdown-item i {
+            width: 20px;
+            margin-right: 10px;
+            color: #6c757d;
+        }
+        
+        .profile-dropdown .dropdown-divider {
+            margin: 5px 0;
+        }
+        
+        .navbar-nav .nav-link {
+            padding: 0.5rem 1rem;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #E7592B;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .main-sidebar {
+    background: #fff !important;
+    color: #222 !important;
+    border-right: 1px solid #eee;
+}
+
+.main-sidebar .nav-link,
+.main-sidebar .brand-link,
+.main-sidebar .info a {
+    color: #222 !important;
+}
+
+.main-sidebar .nav-icon {
+    color: #222 !important;
+    transition: color 0.2s;
+}
+
+.main-sidebar .nav-link.active,
+.main-sidebar .nav-link:hover {
+    background: #fff3ed !important; /* very light orange background */
+    color: var(--primary-color) !important;
+    font-weight: 600;
+}
+
+.main-sidebar .nav-link.active .nav-icon,
+.main-sidebar .nav-link:hover .nav-icon {
+    color: var(--primary-color) !important;
+}
+
+.main-sidebar .nav-link.active p,
+.main-sidebar .nav-link:hover p {
+    color: var(--primary-color) !important;
+}
+</style>
     
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
@@ -26,9 +113,9 @@
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
             <ul class="navbar-nav">
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-                </li>
+                </li> -->
             </ul>
 
             <!-- Right navbar links -->
@@ -47,130 +134,215 @@
                     @endif
                 @else
                     <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            {{ Auth::user()->name }}
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            </div>
+                            <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
                         </a>
-
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{ route('logout') }}"
-                               onclick="event.preventDefault();
-                                             document.getElementById('logout-form').submit();">
-                                {{ __('Logout') }}
-                            </a>
-
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                @csrf
-                            </form>
-                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown" aria-labelledby="navbarDropdown">
+                            <li class="dropdown-header">
+                                <div class="user-avatar mx-auto mb-2" style="width: 48px; height: 48px; font-size: 1.2rem;">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </div>
+                                <h6 class="mb-0">{{ Auth::user()->name }}</h6>
+                                <small class="text-muted">{{ Auth::user()->email }}</small>
+                            </li>
+                            <li><div class="dropdown-divider"></div></li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user"></i> Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cog"></i> Settings
+                                </a>
+                            </li>
+                            <li><div class="dropdown-divider"></div></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                   onclick="event.preventDefault();
+                                                 document.getElementById('logout-form').submit();">
+                                    <i class="fas fa-sign-out-alt"></i> {{ __('Logout') }}
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            </li>
+                        </ul>
                     </li>
                 @endguest
             </ul>
         </nav>
 
+        @auth
         <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <!-- Brand Logo -->
-            <a href="{{ url('/') }}" class="brand-link">
-                <span class="brand-text font-weight-light">Flame & Crust</span>
-            </a>
+        <aside class="main-sidebar" style="width: 250px; background-color: #ffffff; color: #333; padding: 20px; box-shadow: 2px 0px 8px rgb(255, 255, 255); display: flex; flex-direction: column; min-height: 100vh;">
+            <!-- Logo -->
+            <div style="text-align: center; margin-bottom: 25px;">
+                <img src="{{ asset('uploads/logo/logo2.png') }}" alt="Logo" style="width: 80px;">
+                <div style="margin-top: 10px;">
+                    <div style="font-size: 22px; color: #E7592B; font-family: 'Castoro Titling'; font-weight: bold;">FLAME & CRUST</div>
+                    <div style="font-size: 14px; color: #888; font-family: 'Gloock';">PIZZERIA</div>
+                </div>
+            </div>
 
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <!-- Sidebar Menu -->
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="{{ route('home') }}" class="nav-link {{ Request::is('home') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>Dashboard</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-box"></i>
-                                <p>
-                                    Inventory Center
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('items.index') }}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Items</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('categories.index') }}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Categories</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-shopping-cart"></i>
-                                <p>
-                                    Procurement Center
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('suppliers.index') }}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Suppliers</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('purchase-orders.index') }}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Purchase Orders</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('grns.index') }}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>GRN</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('customers.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Customer Center</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('orders.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-shopping-bag"></i>
-                                <p>Order Center</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('delivery.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-truck"></i>
-                                <p>Delivery Center</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('employees.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-user-tie"></i>
-                                <p>Employee Center</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('roles.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-lock"></i>
-                                <p>Access Management</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+            <!-- Sidebar Menu -->
+            <div id="sidebarMenu" style="flex-grow: 1;">
+                <button class="sidebar-btn">
+                    <span class="btn-content"><span class="material-icons">dashboard</span> Dashboard</span>
+                </button>
+
+                
+                <button class="sidebar-btn" onclick="toggleMenu(this)">
+                    <span class="btn-content"><span class="material-icons">business</span> Inventory Center</span>
+                    <span class="material-icons toggle-icon">expand_more</span>
+                </button>
+                <div class="submenu" style="display: none; margin-left: 20px; margin-top: 6px; text-align: left;">
+                    <a href="{{ route('admin.categories.index') }}" class="submenu-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">Item Category</a>
+                    <a href="{{ route('admin.items.index') }}" class="submenu-link {{ request()->routeIs('admin.items.*') ? 'active' : '' }}">Item</a>
+                    <a href="{{ route('admin.productcategories.index') }}" class="submenu-link {{ request()->routeIs('admin.productcategories.*') ? 'active' : '' }}">Product Category</a>
+                    <a href="{{ route('admin.production.index') }}" class="submenu-link {{ request()->routeIs('admin.production.*') ? 'active' : '' }}">Product</a>
+                </div>
+
+                <!-- Procurement Center -->
+                <div>
+                    <button class="sidebar-btn" onclick="toggleMenu(this)">
+                        <span class="btn-content"><span class="material-icons">business</span> Procurement Center</span>
+                        <span class="material-icons toggle-icon">expand_more</span>
+                    </button>
+                    <div class="submenu" style="display: none; margin-left: 20px; margin-top: 6px; text-align: left;">
+                        <a href="#" class="submenu-link">Suppliers</a>
+                        <a href="#" class="submenu-link">Purchase Orders</a>
+                        <a href="#" class="submenu-link">Good Received Notes</a>
+                    </div>
+                </div>
+
+                <button class="sidebar-btn">
+                    <span class="btn-content"><span class="material-icons">group</span> Customer Center</span>
+                </button>
+
+                <button class="sidebar-btn">
+                    <span class="btn-content"><span class="material-icons">shopping_cart</span> Order Center</span>
+                </button>
+
+                <button class="sidebar-btn">
+                    <span class="btn-content"><span class="material-icons">local_shipping</span> Delivery Center</span>
+                </button>
+
+                <button class="sidebar-btn">
+                    <span class="btn-content"><span class="material-icons">people</span> Employee Center</span>
+                </button>
+
+                <button class="sidebar-btn">
+                    <span class="btn-content"><span class="material-icons">security</span> Access Management Center</span>
+                </button>
             </div>
         </aside>
+        <!-- Material Icons CDN -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <style>
+            .sidebar-btn {
+                background-color: #f8f8f8;
+                color: #333;
+                font-size: 15px;
+                padding: 12px 16px;
+                width: 100%;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: background 0.3s, color 0.3s;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+            .sidebar-btn:hover,
+            .sidebar-btn.active {
+                background-color: #fff3ed;
+                color: #E7592B;
+                font-weight: 600;
+            }
+            .sidebar-btn:hover .material-icons,
+            .sidebar-btn.active .material-icons {
+                color: #E7592B;
+            }
+            .btn-content {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .submenu-link {
+                display: block;
+                padding: 8px 15px;
+                color: #555;
+                text-decoration: none;
+                font-size: 14px;
+                border-radius: 4px;
+                transition: background 0.3s, color 0.3s;
+                margin-bottom: 4px;
+            }
+            .submenu-link:hover,
+            .submenu-link.active {
+                background-color: #fff3ed;
+                color: #E7592B;
+                font-weight: 500;
+            }
+            .toggle-icon {
+                font-size: 18px;
+                color: #888;
+                transition: transform 0.3s;
+            }
+            .material-icons {
+                vertical-align: middle;
+                font-size: 20px;
+                transition: color 0.3s;
+            }
+            /* Add active state for parent button when submenu is active */
+            .submenu-link.active ~ .sidebar-btn {
+                background-color: #fff3ed;
+                color: #E7592B;
+                font-weight: 600;
+            }
+        </style>
+        <script>
+            function toggleMenu(button) {
+                const submenu = button.nextElementSibling;
+                const icon = button.querySelector('.toggle-icon');
+                
+                // Check if any submenu link is active
+                const hasActiveLink = submenu.querySelector('.submenu-link.active') !== null;
+                
+                if (hasActiveLink) {
+                    submenu.style.display = "block";
+                    icon.textContent = "expand_less";
+                    button.classList.add('active');
+                } else if (submenu.style.display === "none" || submenu.style.display === "") {
+                    submenu.style.display = "block";
+                    icon.textContent = "expand_less";
+                } else {
+                    submenu.style.display = "none";
+                    icon.textContent = "expand_more";
+                }
+            }
+
+            // Initialize menu state on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                const submenus = document.querySelectorAll('.submenu');
+                submenus.forEach(submenu => {
+                    const hasActiveLink = submenu.querySelector('.submenu-link.active') !== null;
+                    if (hasActiveLink) {
+                        submenu.style.display = "block";
+                        const button = submenu.previousElementSibling;
+                        const icon = button.querySelector('.toggle-icon');
+                        icon.textContent = "expand_less";
+                        button.classList.add('active');
+                    }
+                });
+            });
+        </script>
+        @endauth
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">

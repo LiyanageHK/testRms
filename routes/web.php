@@ -31,45 +31,49 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     
     // 🔸 Category CRUD
-    Route::get('categories', [ItemCategoryController::class, 'index']);
-    Route::get('categories/create', [ItemCategoryController::class, 'create']);
-    Route::post('categories/store', [ItemCategoryController::class, 'store']);
-    Route::get('categories/edit/{id}', [ItemCategoryController::class, 'edit']);
-    Route::post('categories/update/{id}', [ItemCategoryController::class, 'update']);
-    Route::get('categories/delete/{id}', [ItemCategoryController::class, 'destroy']);
+    Route::get('categories', [ItemCategoryController::class, 'index'])->name('admin.categories.index');
+    Route::get('categories/create', [ItemCategoryController::class, 'create'])->name('admin.categories.create');
+    Route::post('categories/store', [ItemCategoryController::class, 'store'])->name('admin.categories.store');
+    Route::get('categories/edit/{id}', [ItemCategoryController::class, 'edit'])->name('admin.categories.edit');
+    Route::post('categories/update/{id}', [ItemCategoryController::class, 'update'])->name('admin.categories.update');
+    Route::get('categories/delete/{id}', [ItemCategoryController::class, 'destroy'])->name('admin.categories.destroy');
 
     // 🔸 Item CRUD
-    Route::get('items', [ItemController::class, 'index']);
-    Route::get('items/create', [ItemController::class, 'create']);
-    Route::post('items/store', [ItemController::class, 'store']);
-    Route::get('items/edit/{id}', [ItemController::class, 'edit']);
-    Route::post('items/update/{id}', [ItemController::class, 'update']);
-    Route::get('items/delete/{id}', [ItemController::class, 'destroy']);
+    Route::get('items', [ItemController::class, 'index'])->name('admin.items.index');
+    Route::get('items/create', [ItemController::class, 'create'])->name('admin.items.create');
+    Route::post('items/store', [ItemController::class, 'store'])->name('admin.items.store');
+    Route::get('items/edit/{id}', [ItemController::class, 'edit'])->name('admin.items.edit');
+    Route::post('items/update/{id}', [ItemController::class, 'update'])->name('admin.items.update');
+    Route::get('items/delete/{id}', [ItemController::class, 'destroy'])->name('admin.items.destroy');
 
+    // Production CRUD
+    Route::get('production', [ProductionController::class, 'index'])->name('admin.production.index');
+    Route::get('production/create', [ProductionController::class, 'create'])->name('admin.production.create');
+    Route::post('production/store', [ProductionController::class, 'store'])->name('admin.production.store');
+    Route::get('production/edit/{id}', [ProductionController::class, 'edit'])->name('admin.production.edit');
+    Route::post('production/update/{id}', [ProductionController::class, 'update'])->name('admin.production.update');
+    Route::get('production/delete/{id}', [ProductionController::class, 'destroy'])->name('admin.production.destroy');
+    Route::delete('production/image/delete/{id}', [ProductionController::class, 'deleteImage'])->name('admin.production.image.delete');
 
-    Route::get('production', [ProductionController::class, 'index']);
-    Route::get('production/create', [ProductionController::class, 'create']);
-    Route::post('production/store', [ProductionController::class, 'store']);
-    Route::get('production/edit/{id}', [ProductionController::class, 'edit']);
-    Route::post('production/update/{id}', [ProductionController::class, 'update']);
-    Route::get('production/delete/{id}', [ProductionController::class, 'destroy']);
-    Route::delete('production/image/delete/{id}', [ProductionController::class, 'deleteImage']);
+    // Role CRUD
+    Route::get('role', [RoleController::class, 'index'])->name('admin.role.index');
+    Route::get('role/create', [RoleController::class, 'create'])->name('admin.role.create');
+    Route::post('role/store', [RoleController::class, 'store'])->name('admin.role.store');
+    Route::get('role/edit/{id}', [RoleController::class, 'edit'])->name('admin.role.edit');
+    Route::post('role/update/{id}', [RoleController::class, 'update'])->name('admin.role.update');
+    Route::get('role/delete/{id}', [RoleController::class, 'destroy'])->name('admin.role.destroy');
 
-
-    Route::get('role', [RoleController::class, 'index']);
-    Route::get('role/create', [RoleController::class, 'create']);
-    Route::post('role/store', [RoleController::class, 'store']);
-    Route::get('role/edit/{id}', [RoleController::class, 'edit']);
-    Route::post('role/update/{id}', [RoleController::class, 'update']);
-    Route::get('role/delete/{id}', [RoleController::class, 'destroy']);
-
-
+    // Product Categories CRUD
     Route::prefix('productcategories')->group(function () {
-        Route::get('/', [ProductCategoryController::class, 'index']);
-        Route::get('/create', [ProductCategoryController::class, 'create']);
-        Route::post('/store', [ProductCategoryController::class, 'store']);
-        Route::get('/edit/{id}', [ProductCategoryController::class, 'edit']);
-        Route::post('/update/{id}', [ProductCategoryController::class, 'update']);
-        Route::get('/delete/{id}', [ProductCategoryController::class, 'destroy']);
+        Route::get('/', [ProductCategoryController::class, 'index'])->name('admin.productcategories.index');
+        Route::get('/create', [ProductCategoryController::class, 'create'])->name('admin.productcategories.create');
+        Route::post('/store', [ProductCategoryController::class, 'store'])->name('admin.productcategories.store');
+        Route::get('/edit/{id}', [ProductCategoryController::class, 'edit'])->name('admin.productcategories.edit');
+        Route::post('/update/{id}', [ProductCategoryController::class, 'update'])->name('admin.productcategories.update');
+        Route::get('/delete/{id}', [ProductCategoryController::class, 'destroy'])->name('admin.productcategories.destroy');
     });
+
+
+    Route::get('/user_permissions', [App\Http\Controllers\Auth\AuthController::class, 'getUserPermissions']);
+    Route::post('/update_permission', [App\Http\Controllers\Auth\AuthController::class, 'updatePermission'])->name('admin.update.permission');
 });

@@ -133,6 +133,16 @@
                         </li>
                     @endif
                 @else
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('logout') }}"
+                           onclick="event.preventDefault();
+                                     document.getElementById('logout-form').submit();">
+                            <i class="fas fa-sign-out-alt"></i> {{ __('Logout') }}
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="user-avatar">
@@ -150,25 +160,14 @@
                             </li>
                             <li><div class="dropdown-divider"></div></li>
                             <li>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="{{ route('employees.profile') }}">
                                     <i class="fas fa-user"></i> Profile
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-cog"></i> Settings
+                                <a class="dropdown-item" href="{{ route('employees.changePasswordForm') }}">
+                                    <i class="fas fa-key"></i> Change Password
                                 </a>
-                            </li>
-                            <li><div class="dropdown-divider"></div></li>
-                            <li>
-                                <a class="dropdown-item" href="{{ route('logout') }}"
-                                   onclick="event.preventDefault();
-                                                 document.getElementById('logout-form').submit();">
-                                    <i class="fas fa-sign-out-alt"></i> {{ __('Logout') }}
-                                </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
                             </li>
                         </ul>
                     </li>
@@ -190,24 +189,33 @@
 
             <!-- Sidebar Menu -->
             <div id="sidebarMenu" style="flex-grow: 1;">
-                <button class="sidebar-btn">
-                    <span class="btn-content"><span class="material-icons">dashboard</span> Dashboard</span>
-                </button>
+                <a href="{{ route('home') }}" class="sidebar-btn {{ request()->routeIs('home') ? 'active' : '' }}">
+                    <span class="btn-content">
+                        <span class="material-icons">dashboard</span>
+                        Dashboard
+                    </span>
+                </a>
 
-                
-                <button class="sidebar-btn" onclick="toggleMenu(this)">
-                    <span class="btn-content"><span class="material-icons">business</span> Inventory Center</span>
-                    <span class="material-icons toggle-icon">expand_more</span>
-                </button>
-                <div class="submenu" style="display: none; margin-left: 20px; margin-top: 6px; text-align: left;">
-                    <a href="{{ route('admin.categories.index') }}" class="submenu-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">Item Category</a>
-                    <a href="{{ route('admin.items.index') }}" class="submenu-link {{ request()->routeIs('admin.items.*') ? 'active' : '' }}">Item</a>
-                    <a href="{{ route('admin.productcategories.index') }}" class="submenu-link {{ request()->routeIs('admin.productcategories.*') ? 'active' : '' }}">Product Category</a>
-                    <a href="{{ route('admin.production.index') }}" class="submenu-link {{ request()->routeIs('admin.production.*') ? 'active' : '' }}">Product</a>
+
+                 
+               
+
+                <div id="inventorynav">
+                    <button class="sidebar-btn" onclick="toggleMenu(this)">
+                        <span class="btn-content"><span class="material-icons">business</span> Inventory Center</span>
+                        <span class="material-icons toggle-icon">expand_more</span>
+                    </button>
+                    <div class="submenu" style="display: none; margin-left: 20px; margin-top: 6px; text-align: left;">
+                        <a href="{{ route('admin.inventory.index') }}" class="submenu-link {{ request()->routeIs('admin.inventory.index') ? 'active' : '' }}">Inventory Status</a>
+                        <a href="{{ route('admin.categories.index') }}" class="submenu-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">Item Category</a>
+                        <a href="{{ route('admin.items.index') }}" class="submenu-link {{ request()->routeIs('admin.items.*') ? 'active' : '' }}">Item</a>
+                        <a href="{{ route('admin.productcategories.index') }}" class="submenu-link {{ request()->routeIs('admin.productcategories.*') ? 'active' : '' }}">Product Category</a>
+                        <a href="{{ route('admin.production.index') }}" class="submenu-link {{ request()->routeIs('admin.production.*') ? 'active' : '' }}">Product</a>
+                    </div>
                 </div>
 
                 <!-- Procurement Center -->
-                <div>
+                <div id="pronav">
                     <button class="sidebar-btn" onclick="toggleMenu(this)">
                         <span class="btn-content"><span class="material-icons">business</span> Procurement Center</span>
                         <span class="material-icons toggle-icon">expand_more</span>
@@ -219,25 +227,39 @@
                     </div>
                 </div>
 
-                <button class="sidebar-btn">
-                    <span class="btn-content"><span class="material-icons">group</span> Customer Center</span>
-                </button>
+                <div id="cusnav">
+                    <button class="sidebar-btn">
+                        <span class="btn-content"><span class="material-icons">group</span> Customer Center</span>
+                    </button>
+                </div>
 
-                <button class="sidebar-btn">
-                    <span class="btn-content"><span class="material-icons">shopping_cart</span> Order Center</span>
-                </button>
+                <div id="ordernav">
+                    <button class="sidebar-btn">
+                        <span class="btn-content"><span class="material-icons">shopping_cart</span> Order Center</span>
+                    </button>
+                </div>
 
-                <button class="sidebar-btn">
-                    <span class="btn-content"><span class="material-icons">local_shipping</span> Delivery Center</span>
-                </button>
+                <div id="delinav">
+                    <button class="sidebar-btn">
+                        <span class="btn-content"><span class="material-icons">local_shipping</span> Delivery Center</span>
+                    </button>
+                </div>
 
-                <button class="sidebar-btn">
-                    <span class="btn-content"><span class="material-icons">people</span> Employee Center</span>
-                </button>
+                <div id="empnav">
+                    <button class="sidebar-btn">
+                        <span class="btn-content"><span class="material-icons">people</span> Employee Center</span>
+                    </button>
+                </div>
 
-                <button class="sidebar-btn">
-                    <span class="btn-content"><span class="material-icons">security</span> Access Management Center</span>
-                </button>
+                <div id="accnav">
+                    <button class="sidebar-btn" onclick="toggleMenu(this)">
+                        <span class="btn-content"><span class="material-icons">security</span> Access Management Center</span>
+                        <span class="material-icons toggle-icon">expand_more</span>
+                    </button>
+                    <div class="submenu" style="display: none; margin-left: 20px; margin-top: 6px; text-align: left;">
+                        <a href="{{ route('admin.role.index') }}" class="submenu-link {{ request()->routeIs('admin.role.*') ? 'active' : '' }}">Role</a>
+                    </div>
+                </div>
             </div>
         </aside>
         <!-- Material Icons CDN -->
@@ -257,6 +279,7 @@
                 justify-content: space-between;
                 align-items: center;
                 margin-bottom: 8px;
+                text-decoration: none;
             }
             .sidebar-btn:hover,
             .sidebar-btn.active {
@@ -378,3 +401,68 @@
     @stack('scripts')
 </body>
 </html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $.ajax({
+            url: '/admin/user_permissions',
+            method: 'GET',
+            success: function(response) {
+                console.log('Permissions response:', response);
+
+                // Inventory Center permissions
+                if (response.inv === 1) {
+                    $('#inventorynav').show();
+                } else {
+                    $('#inventorynav').hide();
+                }
+
+                // Customer Center permissions
+                if (response.cus === 1) {
+                    $('#cusnav').show();
+                } else {
+                    $('#cusnav').hide();
+                }
+
+                // Order Center permissions
+                if (response.order === 1) {
+                    $('#ordernav').show();
+                } else {
+                    $('#ordernav').hide();
+                }
+
+                // Delivery Center permissions
+                if (response.deli === 1) {
+                    $('#delinav').show();
+                } else {
+                    $('#delinav').hide();
+                }
+
+                // Employee Center permissions
+                if (response.emp === 1) {
+                    $('#empnav').show();
+                } else {
+                    $('#empnav').hide();
+                }
+
+                // Access Management Center permissions
+                if (response.acc === 1) {
+                    $('#accnav').show();
+                } else {
+                    $('#accnav').hide();
+                }
+
+                // Product permissions
+                if (response.pro === 1) {
+                    $('#pronav').show();
+                } else {
+                    $('#pronav').hide();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching permissions:", error);
+            }
+        });
+    });
+</script>

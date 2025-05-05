@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,6 +9,7 @@ use App\Models\Company;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+
 
 class AuthController extends Controller
 {
@@ -26,11 +27,9 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if ($user && Hash::check($request->password, $user->pw)&& $user->systemrole == 'user') {
+        if ($user && Hash::check($request->password, $user->pw) && $user->systemrole == 'user') {
             Auth::login($user);
-
             return redirect()->route('admin.dashboard')->with('status', 'Login successful!');
-
         } else {
             return redirect()->back()->withErrors(['email' => 'The provided credentials do not match our records.']);
         }
@@ -63,7 +62,6 @@ class AuthController extends Controller
             'password' => 'required|string|confirmed',
         ]);
 
-
         $company = Company::create([
             'name' => $request->company_name,
             'address' => $request->address,
@@ -74,11 +72,11 @@ class AuthController extends Controller
             'currency' => $request->currency,
         ]);
 
-        DB::insert('INSERT INTO  role (role, description, company_id) values (?, ?, ?)', ['owner', 'owner', $company->id]);
+        DB::insert('INSERT INTO role (role, description) values (?, ?, )', ['owner', 'owner']);
         $roleId = DB::getPdo()->lastInsertId();
 
-        $roleId1 = $roleId; // Assign the role ID to $roleId1
-        DB::insert('INSERT INTO user_per(role,sales,cus_care,chatbot,cat,product,user,roles) VALUES(?, ?, ?, ?, ?, ?, ?, ?)', [$roleId1, 1, 1, 1, 1, 1, 1, 1]);
+       
+       
 
         $user = User::create([
             'username' => $request->username,
@@ -93,27 +91,59 @@ class AuthController extends Controller
 
         return redirect('/login')->with('status', 'Registration successful! You can now login.');
     }
+
     public function getUserPermissions()
     {
-        $user = Auth::user();
-        $role = $user->role;
+        try {
+            $user = Auth::user();
+           
+           
 
-        $permissions = DB::select('SELECT * FROM user_per WHERE role = ?', [$role]);
-        return response()->json($permissions);
+            
+         
+            $role = DB::table('role')
+                ->where('role', $user->position)
+                ->first();
+           
+                    
+                    
+           
+
+            // Get permissions for the role
+            $permissions = DB::table('user_per')
+                ->where('role', $role->id)
+                ->select('inv', 'cus', 'order', 'deli', 'emp', 'acc', 'pro')
+                ->first();
+                
+         
+
+            return response()->json($permissions);
+            
+        } catch (\Exception $e) {
+            
+        }
     }
+
     public function updatePermission(Request $request)
     {
-        // Get the incoming data
-        $role_id = $request->input('role_id');
+        $role = $request->input('role');
         $permission = $request->input('permission');
-        $status = $request->input('status');
+        $value = $request->input('value');
 
-        // Update the corresponding permission in the `user_per` table
-        DB::table('user_per')
-            ->where('role', $role_id)
-            ->update([$permission => $status]);
+        // Validate the permission field
+        $validPermissions = ['inv', 'cus', 'order', 'deli', 'emp', 'acc', 'pro'];
+        if (!in_array($permission, $validPermissions)) {
+            return response()->json(['success' => false, 'message' => 'Invalid permission field'], 400);
+        }
 
-        // Return a success response
-        return response()->json(['message' => 'Permission updated successfully']);
+        $updated = DB::table('user_per')
+            ->where('role', $role)
+            ->update([$permission => $value]);
+
+        if ($updated) {
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 404);
     }
 }

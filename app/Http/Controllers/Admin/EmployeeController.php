@@ -4,104 +4,199 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the employees.
+     */
+    public function index()
     {
-        $query = Employee::query();
-
-        if ($request->filled('search')) {
-            $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
-                $q->where('id', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('email', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('position', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('phone', 'like', '%' . $searchTerm . '%');
-            });
-        }
-
-        $employees = $query->orderBy('id')->paginate(10);  // Added pagination for better performance
-
+        $employees = Employee::all();
         return view('employees.index', compact('employees'));
     }
 
+    /**
+     * Show the form for creating a new employee.
+     */
     public function create()
     {
         return view('employees.create');
     }
 
+    /**
+     * Store a newly created employee in storage.
+     */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:employees,email',
-            'nic' => 'required|string|max:20|unique:employees,nic',
-            'phone' => 'required|regex:/^\+94[0-9]{9}$/',
-            'position' => 'required',
+            'email' => 'required|string|email|max:255|unique:employees',
+            'nic' => 'required|string|max:255|unique:employees',
+            'position' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:255',
             'address_line1' => 'required|string|max:255',
-            'city' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:20',
+            'address_line2' => 'nullable|string|max:255',
+            'city' => 'required|string|max:255',
+            'postal_code' => 'required|string|max:255',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
-        Employee::create([
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $employee = Employee::create([
             'name' => $request->name,
             'email' => $request->email,
             'nic' => $request->nic,
-            'password' => bcrypt($request->nic), // Default password set as NIC
             'position' => $request->position,
             'phone' => $request->phone,
             'address_line1' => $request->address_line1,
             'address_line2' => $request->address_line2,
             'city' => $request->city,
             'postal_code' => $request->postal_code,
+            'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
+        return redirect()->route('employees.index')
+            ->with('success', 'Employee created successfully.');
     }
 
+    /**
+     * Display the specified employee.
+     */
+    public function show(Employee $employee)
+    {
+        return view('employees.show', compact('employee'));
+    }
+
+    /**
+     * Show the form for editing the specified employee.
+     */
     public function edit(Employee $employee)
     {
         return view('employees.edit', compact('employee'));
     }
 
+    /**
+     * Update the specified employee in storage.
+     */
     public function update(Request $request, Employee $employee)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:employees,email,' . $employee->id,
-            'nic' => 'required|string|max:20',
-            'position' => 'required|in:Administrator,Chef,Kitchen Staff,Driver',
+            'email' => 'required|string|email|max:255|unique:employees,email,' . $employee->id,
+            'nic' => 'required|string|max:255|unique:employees,nic,' . $employee->id,
+            'position' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:255',
             'address_line1' => 'required|string|max:255',
-            'city' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:20',
+            'address_line2' => 'nullable|string|max:255',
+            'city' => 'required|string|max:255',
+            'postal_code' => 'required|string|max:255',
         ]);
 
-        $employee->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'nic' => $request->nic,
-            'phone' => $request->phone,
-            'position' => $request->position,
-            'address_line1' => $request->address_line1,
-            'address_line2' => $request->address_line2,
-            'city' => $request->city,
-            'postal_code' => $request->postal_code,
-        ]);
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
-        return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
+        $employee->update($request->except('password'));
+
+        return redirect()->route('employees.index')
+            ->with('success', 'Employee updated successfully.');
     }
 
+    /**
+     * Remove the specified employee from storage.
+     */
     public function destroy(Employee $employee)
     {
         $employee->delete();
-        return redirect()->route('employees.index')->with('success', 'Employee deleted successfully.');
+        return redirect()->route('employees.index')
+            ->with('success', 'Employee deleted successfully.');
     }
 
-    public function show($id)
+    /**
+     * Show the form for changing password.
+     */
+    public function showChangePasswordForm()
     {
-        $employee = Employee::findOrFail($id);
-        return view('employees.show', compact('employee'));
+        return view('employees.change-password');
     }
-}
+
+    /**
+     * Change the employee's password.
+     */
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $employee = Auth::user();
+
+        // Verify current password
+        if (!Hash::check($request->current_password, $employee->password)) {
+            return back()->withErrors(['current_password' => 'Current password is incorrect']);
+        }
+
+        // Update password
+        $employee->password = Hash::make($request->new_password);
+        $employee->save();
+
+        return redirect()->route('employees.show', $employee)
+            ->with('success', 'Password changed successfully');
+    }
+
+    /**
+     * Show the employee's profile.
+     */
+    public function profile()
+    {
+        $employee = Auth::user();
+        return view('employees.profile', compact('employee'));
+    }
+
+    /**
+     * Update the employee's profile.
+     */
+    public function updateProfile(Request $request)
+    {
+        $employee = Auth::user();
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:employees,email,' . $employee->id,
+            'phone' => 'nullable|string|max:255',
+            'address_line1' => 'required|string|max:255',
+            'address_line2' => 'nullable|string|max:255',
+            'city' => 'required|string|max:255',
+            'postal_code' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $employee->update($request->all());
+
+        return redirect()->route('employees.profile')
+            ->with('success', 'Profile updated successfully');
+    }
+} 

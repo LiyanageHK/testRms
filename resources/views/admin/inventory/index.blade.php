@@ -1,10 +1,12 @@
 @extends('layouts.app')
 
+@section('title', 'Inventory')
+
 @section('content')
     <!-- Top Row -->
     <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 30px;">
         <h2 style="font-size: 20px; margin: 0; font-weight: 500;">Overview</h2>
-        <input type="text" id="searchInput" placeholder="Search roles..." 
+        <input type="text" id="searchInput" placeholder="Search inventory..." 
                style="padding: 10px 12px; width: 260px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px;">
     </div>
 
@@ -13,49 +15,53 @@
         
         <!-- Section Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="margin: 0; font-size: 18px; color: #333;">Roles</h3>
-            <a href="{{ url('admin/role/create') }}"
-               style="padding: 8px 14px; background-color: #28a745; color: #fff; text-decoration: none; border-radius: 6px; font-size: 14px; transition: background-color 0.3s;">
-                + Add New Role
-            </a>
+            <h3 style="margin: 0; font-size: 18px; color: #333;">Inventory Status</h3>
+            
         </div>
 
-        <!-- Roles Table -->
+        <!-- Inventory Table -->
         <table style="width: 100%; border-collapse: separate; border-spacing: 0 12px;">
             <thead style="background-color: #f9f9f9;">
                 <tr>
-                    <th style="padding: 12px; text-align: left; font-weight: 600;">ID</th>
-                    <th style="padding: 12px; text-align: left; font-weight: 600;">Name</th>
+                    <th style="padding: 12px; text-align: left; font-weight: 600;">Category</th>
+                    <th style="padding: 12px; text-align: left; font-weight: 600;">Item Name</th>
+                    <th style="padding: 12px; text-align: left; font-weight: 600;">Price (Rs.)</th>
+                    <th style="padding: 12px; text-align: left; font-weight: 600;">Total Received</th>
+                    <th style="padding: 12px; text-align: left; font-weight: 600;">Total Ordered</th>
+                    <th style="padding: 12px; text-align: left; font-weight: 600;">Current Stock</th>
                     <th style="padding: 12px; text-align: right;"></th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($roles as $role)
+                @forelse($inventory as $item)
                     <tr style="background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                        <td style="padding: 12px;">{{ $role->id }}</td>
-                        <td style="padding: 12px;">{{ $role->role }}</td>
+                        <td style="padding: 12px;">{{ $item->category_name }}</td>
+                        <td style="padding: 12px;">{{ $item->item_name }}</td>
+                        <td style="padding: 12px;">Rs. {{ number_format($item->price, 2) }}</td>
+                        <td style="padding: 12px;">{{ $item->total_received }}</td>
+                        <td style="padding: 12px;">{{ $item->total_ordered }}</td>
+                        <td style="padding: 12px;">
+                            <span style="display: inline-block; padding: 4px 8px; border-radius: 4px; 
+                                  background-color: {{ $item->current_stock < 10 ? '#dc3545' : '#28a745' }}; 
+                                  color: white; font-size: 12px;">
+                                {{ $item->current_stock }}
+                            </span>
+                        </td>
                         <td style="padding: 12px; text-align: right;">
-                            <a href="{{ url('admin/role/edit/'.$role->id) }}" 
-                               style="display: inline-block; background-color: #0d6efd; color: white; text-decoration: none; padding: 6px 12px; border-radius: 5px; font-size: 14px; margin-left: 5px;">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <a href="{{ url('admin/role/delete/'.$role->id) }}" 
-                               onclick="return confirm('Are you sure you want to delete this role?')"
-                               style="display: inline-block; background-color: #dc3545; color: white; text-decoration: none; padding: 6px 12px; border-radius: 5px; font-size: 14px; margin-left: 5px;">
-                                <i class="fas fa-trash"></i> Delete
+                            <a href="{{ route('admin.inventory.show', $item->id) }}" 
+                               style="display: inline-block; background-color: #6c757d; color: white; text-decoration: none; padding: 6px 12px; border-radius: 5px; font-size: 14px; margin-left: 5px;">
+                                <i class="fas fa-eye"></i> View
                             </a>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" style="padding: 12px; text-align: center;">No roles found.</td>
+                        <td colspan="7" style="padding: 12px; text-align: center;">No inventory items found.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-
-   
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -97,4 +103,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-@endsection
+@endsection 

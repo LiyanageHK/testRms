@@ -633,7 +633,7 @@
             </div>
 
             <!-- New Filter Section -->
-            <div class="menu-filters">
+           <!--  <div class="menu-filters">
                 <div class="filter-group">
                     <label>Dietary:</label>
                     <div class="filter-checkbox">
@@ -664,59 +664,59 @@
                         <option value="spicy">Spicy</option>
                     </select>
                 </div>
-            </div>
-
+            </div>-->
+<!-- 
             <div class="menu-categories">
                 <button class="category-btn active" data-category="all">All Items</button>
                 <button class="category-btn" data-category="classic">Classic Range</button>
                 <button class="category-btn" data-category="signature">Signature Range</button>
                 <button class="category-btn" data-category="premium">Premium Range</button>
+            </div> -->
+
+            <!-- Category Buttons -->
+<div class="menu-categories">
+    <button class="category-btn active" data-category="all">All Items</button>
+    @foreach($categories as $category)
+        <button class="category-btn" data-category="{{ strtolower($category->name) }}">
+            {{ $category->name }}
+        </button>
+    @endforeach
+</div>
+
+<div class="menu-grid">
+    @foreach($products as $product)
+        <div class="menu-item" 
+             data-category="{{ strtolower($product->category_name) }}"
+             data-price="{{ $product->small_price }}"
+             data-dietary="{{ $product->name ? 'veg' : 'non-veg' }}"
+             data-spice-level="{{ strtolower($product->spice_level ?? '') }}">
+            <div class="menu-item-img">
+                @if($product->image)
+                    <img src="{{ asset('uploads/products/' . $product->image) }}" alt="{{ $product->name }}">
+                @else
+                    <img src="{{ asset('images/default-product.jpg') }}" alt="{{ $product->name }}">
+                @endif
             </div>
+            <div class="menu-item-info">
+                <h3>{{ $product->name }}</h3>
+                <p>{{ $product->description }}</p>
 
-            <div class="menu-grid">
-                <!-- Classic Range -->
-                <div class="menu-item" data-category="classic" data-dietary="veg" data-spice-level="mild" data-price="1200">
-                    <div class="menu-item-img">
-                        <img src="{{ asset('uploads/products/Pizza Napoletana.png') }}" alt="Margherita Pizza">
-                    </div>
-                    <div class="menu-item-info">
-                        <h3>Margherita Pizza</h3>
-                        <p>Classic pizza with tomato sauce, mozzarella, and fresh basil</p>
-                        <div class="item-indicators">
-                            <div class="dietary-indicator">
-                                <span class="dietary-dot veg-dot"></span>
-                                <span>Veg</span>
-                            </div>
-                            <div class="spice-level">
-                                <i class="fas fa-pepper-hot chili-icon mild"></i>
-                                <i class="fas fa-pepper-hot chili-icon mild"></i>
-                                <span>Mild</span>
-                            </div>
-                        </div>
-                        <div class="pizza-sizes">
-                            <button class="size-button active" data-size="small" data-price="1200">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Small</span>
-                                </div>
-                                <div class="size-price">Rs. 1,200</div>
-                            </button>
-                            <button class="size-button" data-size="medium" data-price="1600">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Medium</span>
-                                </div>
-                                <div class="size-price">Rs. 1,600</div>
-                            </button>
-                            <button class="size-button" data-size="large" data-price="2000">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Large</span>
-                                </div>
-                                <div class="size-price">Rs. 2,000</div>
-                            </button>
-                        </div>
-                        <div class="menu-item-bottom">
+                
+                <div class="pizza-sizes">
+                    <button class="size-button active" data-size="small" data-price="{{ $product->small_price }}">
+                        <div class="size-label"><i class="fas fa-pizza-slice"></i> <span>Small</span></div>
+                        <div class="size-price">Rs. {{ number_format($product->small_price, 2) }}</div>
+                    </button>
+                    <button class="size-button" data-size="medium" data-price="{{ $product->medium_price }}">
+                        <div class="size-label"><i class="fas fa-pizza-slice"></i> <span>Medium</span></div>
+                        <div class="size-price">Rs. {{ number_format($product->medium_price, 2) }}</div>
+                    </button>
+                    <button class="size-button" data-size="large" data-price="{{ $product->large_price }}">
+                        <div class="size-label"><i class="fas fa-pizza-slice"></i> <span>Large</span></div>
+                        <div class="size-price">Rs. {{ number_format($product->large_price, 2) }}</div>
+                    </button>
+                </div>
+                <div class="menu-item-bottom">
                             <div class="buttons-container">
                                 <button class="customize-btn">Customize</button>
                                 <button class="add-to-cart-btn">
@@ -725,170 +725,13 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="menu-item" data-category="classic" data-dietary="non-veg" data-spice-level="spicy" data-price="1300">
-                    <div class="menu-item-img">
-                        <img src="{{ asset('uploads/products/Pizza Napoletana.png') }}" alt="Pepperoni Pizza">
-                    </div>
-                    <div class="menu-item-info">
-                        <h3>Pepperoni Pizza</h3>
-                        <p>Tomato sauce, mozzarella, and spicy pepperoni</p>
-                        <div class="item-indicators">
-                            <div class="dietary-indicator">
-                                <span class="dietary-dot non-veg-dot"></span>
-                                <span>Non-Veg</span>
-                            </div>
-                            <div class="spice-level">
-                                <i class="fas fa-pepper-hot chili-icon spicy"></i>
-                                <i class="fas fa-pepper-hot chili-icon spicy"></i>
-                                <i class="fas fa-pepper-hot chili-icon spicy"></i>
-                                <span>Spicy</span>
-                            </div>
-                        </div>
-                        <div class="pizza-sizes">
-                            <button class="size-button" data-size="small" data-price="1300">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Small</span>
-                                </div>
-                                <div class="size-price">Rs. 1,300</div>
-                            </button>
-                            <button class="size-button" data-size="medium" data-price="1700">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Medium</span>
-                                </div>
-                                <div class="size-price">Rs. 1,700</div>
-                            </button>
-                            <button class="size-button" data-size="large" data-price="2100">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Large</span>
-                                </div>
-                                <div class="size-price">Rs. 2,100</div>
-                            </button>
-                        </div>
-                        <div class="menu-item-bottom">
-                            <div class="buttons-container">
-                                <button class="customize-btn">Customize</button>
-                                <button class="add-to-cart-btn">
-                                    <i class="fas fa-shopping-cart"></i>
-                                    Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Signature Range -->
-                <div class="menu-item" data-category="signature" data-dietary="non-veg" data-spice-level="medium" data-price="1500">
-                    <div class="menu-item-img">
-                        <img src="{{ asset('uploads/products/Pizza Napoletana.png') }}" alt="BBQ Chicken Pizza">
-                    </div>
-                    <div class="menu-item-info">
-                        <h3>BBQ Chicken Pizza</h3>
-                        <p>BBQ sauce, mozzarella, chicken, red onions, cilantro</p>
-                        <div class="item-indicators">
-                            <div class="dietary-indicator">
-                                <span class="dietary-dot non-veg-dot"></span>
-                                <span>Non-Veg</span>
-                            </div>
-                            <div class="spice-level">
-                                <i class="fas fa-pepper-hot chili-icon medium"></i>
-                                <i class="fas fa-pepper-hot chili-icon medium"></i>
-                                <span>Medium</span>
-                            </div>
-                        </div>
-                        <div class="pizza-sizes">
-                            <button class="size-button" data-size="small" data-price="1500">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Small</span>
-                                </div>
-                                <div class="size-price">Rs. 1,500</div>
-                            </button>
-                            <button class="size-button" data-size="medium" data-price="1900">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Medium</span>
-                                </div>
-                                <div class="size-price">Rs. 1,900</div>
-                            </button>
-                            <button class="size-button" data-size="large" data-price="2300">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Large</span>
-                                </div>
-                                <div class="size-price">Rs. 2,300</div>
-                            </button>
-                        </div>
-                        <div class="menu-item-bottom">
-                            <div class="buttons-container">
-                                <button class="customize-btn">Customize</button>
-                                <button class="add-to-cart-btn">
-                                    <i class="fas fa-shopping-cart"></i>
-                                    Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Premium Range -->
-                <div class="menu-item" data-category="premium" data-dietary="non-veg" data-spice-level="mild" data-price="1800">
-                    <div class="menu-item-img">
-                        <img src="{{ asset('uploads/products/Pizza Napoletana.png') }}" alt="Truffle Pizza">
-                    </div>
-                    <div class="menu-item-info">
-                        <h3>Truffle Pizza</h3>
-                        <p>White sauce, mozzarella, truffle oil, wild mushrooms, prosciutto</p>
-                        <div class="item-indicators">
-                            <div class="dietary-indicator">
-                                <span class="dietary-dot non-veg-dot"></span>
-                                <span>Non-Veg</span>
-                            </div>
-                            <div class="spice-level">
-                                <i class="fas fa-pepper-hot chili-icon mild"></i>
-                                <span>Mild</span>
-                            </div>
-                        </div>
-                        <div class="pizza-sizes">
-                            <button class="size-button" data-size="small" data-price="1800">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Small</span>
-                                </div>
-                                <div class="size-price">Rs. 1,800</div>
-                            </button>
-                            <button class="size-button" data-size="medium" data-price="2200">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Medium</span>
-                                </div>
-                                <div class="size-price">Rs. 2,200</div>
-                            </button>
-                            <button class="size-button" data-size="large" data-price="2600">
-                                <div class="size-label">
-                                    <i class="fas fa-pizza-slice"></i>
-                                    <span>Large</span>
-                                </div>
-                                <div class="size-price">Rs. 2,600</div>
-                            </button>
-                        </div>
-                        <div class="menu-item-bottom">
-                            <div class="buttons-container">
-                                <button class="customize-btn">Customize</button>
-                                <button class="add-to-cart-btn">
-                                    <i class="fas fa-shopping-cart"></i>
-                                    Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Add dietary/spice indicators if you have those fields -->
             </div>
+        </div>
+    @endforeach
+</div>
+
+           
         </div>
     </section>
     @endsection

@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'Login')
+@section('title', 'Employee Login')
 
 @section('content')
 <form method="POST" action="{{ route('login') }}">
@@ -10,7 +10,7 @@
     <div class="form-group">
         <div class="input-group">
             <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                   placeholder="Email Address" name="email" value="{{ old('email') }}" 
+                   placeholder="Employee Email" name="email" value="{{ old('email') }}" 
                    required autocomplete="email" autofocus>
             <span class="input-group-text">
                 <i class="fas fa-envelope"></i>
@@ -27,7 +27,7 @@
     <div class="form-group">
         <div class="input-group">
             <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                   placeholder="Password" name="password" required autocomplete="current-password">
+                   placeholder="Employee Password" name="password" required autocomplete="current-password">
             <span class="input-group-text">
                 <i class="fas fa-lock"></i>
             </span>
@@ -60,7 +60,7 @@
     <!-- Login Button -->
     <div class="form-group">
         <button type="submit" class="btn btn-secondary btn-block" style="background-color: #E7592B; border-color: #E7592B;">
-            Login
+            Employee Login
         </button>
     </div>
     

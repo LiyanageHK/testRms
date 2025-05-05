@@ -22,19 +22,45 @@ class ProductionController extends Controller
     public function create()
     {
         $items = DB::select("SELECT * FROM items");
-        return view('admin.production.create', compact('items'));
+        $categories = DB::select("SELECT * FROM product_categories");
+        return view('admin.production.create', compact('items', 'categories'));
     }
 
     public function store(Request $request)
     {
+        // Validate the request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'small' => 'required|numeric|min:0.5',
+            'medium' => 'required|numeric|min:0.5',
+            'large' => 'required|numeric|min:0.5',
+            'small_price' => 'required|numeric|min:0',
+            'medium_price' => 'required|numeric|min:0',
+            'large_price' => 'required|numeric|min:0',
+            'images' => 'required|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'item_ids' => 'required|array|min:1',
+            'item_ids.*' => 'exists:items,id',
+          
+        ], [
+            'item_ids.required' => 'Please select at least one item',
+            'item_ids.min' => 'Please select at least one item',
+         
+        ]);
+
         // Insert product
-        DB::insert("INSERT INTO products (name, description, status,small,medium,large, created_at, updated_at) VALUES (?, ?, ?,?,?,?, NOW(), NOW())", [
+        DB::insert("INSERT INTO products (name, description, category_id, status, small, medium, large, small_price, medium_price, large_price, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())", [
             $request->name,
             $request->description,
+            $request->category_id,
             $request->status ? 1 : 0,
-            $request->input('small', $request->input('small')),
-            $request->input('medium', $request->input('medium')),
-            $request->input('large', $request->input('large'))
+            $request->small,
+            $request->medium,
+            $request->large,
+            $request->small_price,
+            $request->medium_price,
+            $request->large_price,
         ]);
 
         $productId = DB::getPdo()->lastInsertId();
@@ -66,6 +92,7 @@ class ProductionController extends Controller
     {
         $product = DB::selectOne("SELECT * FROM products WHERE id = ?", [$id]);
         $items = DB::select("SELECT * FROM items");
+        $categories = DB::select("SELECT * FROM product_categories");
         $productItems = DB::select("SELECT * FROM product_items WHERE product_id = ?", [$id]);
         $images = DB::select("SELECT * FROM product_images WHERE product_id = ?", [$id]);
 
@@ -74,19 +101,44 @@ class ProductionController extends Controller
             $selected[$pi->item_id] = $pi->quantity;
         }
 
-        return view('admin.production.edit', compact('product', 'items', 'selected', 'images'));
+        return view('admin.production.edit', compact('product', 'items', 'categories', 'selected', 'images'));
     }
 
     public function update(Request $request, $id)
     {
+        // Validate the request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'small' => 'required|numeric|min:0.5',
+            'medium' => 'required|numeric|min:0.5',
+            'large' => 'required|numeric|min:0.5',
+            'small_price' => 'required|numeric|min:0',
+            'medium_price' => 'required|numeric|min:0',
+            'large_price' => 'required|numeric|min:0',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'item_ids' => 'required|array|min:1',
+            'item_ids.*' => 'exists:items,id',
+            
+        ], [
+            'item_ids.required' => 'Please select at least one item',
+            'item_ids.min' => 'Please select at least one item',
+           
+        ]);
+
         // Update product
-        DB::update("UPDATE products SET name = ?, description = ?, status = ?,small = ?, medium = ?, large = ?,  updated_at = NOW() WHERE id = ?", [
+        DB::update("UPDATE products SET name = ?, description = ?, status = ?, small = ?, medium = ?, large = ?, small_price = ?, medium_price = ?, large_price = ?, category_id = ?, updated_at = NOW() WHERE id = ?", [
             $request->name,
             $request->description,
             $request->status ? 1 : 0,
-            $request->input('small', $request->input('small')),
-            $request->input('medium', $request->input('medium')),
-            $request->input('large', $request->input('large')),
+            $request->small,
+            $request->medium,
+            $request->large,
+            $request->small_price,
+            $request->medium_price,
+            $request->large_price,
+            $request->category_id,
             $id
         ]);
 
@@ -116,36 +168,43 @@ class ProductionController extends Controller
 
     public function destroy($id)
     {
-        // Delete images from server
+        // Delete product images
         $images = DB::select("SELECT image FROM product_images WHERE product_id = ?", [$id]);
-        foreach ($images as $img) {
-            @unlink(public_path('uploads/products/' . $img->image));
+        foreach ($images as $image) {
+            $filePath = public_path('uploads/products/' . $image->image);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
         }
-
         DB::delete("DELETE FROM product_images WHERE product_id = ?", [$id]);
+
+        // Delete product items
         DB::delete("DELETE FROM product_items WHERE product_id = ?", [$id]);
+
+        // Delete product
         DB::delete("DELETE FROM products WHERE id = ?", [$id]);
 
         return redirect('/admin/production')->with('success', 'Product Deleted!');
     }
-    public function deleteImage($id)
-{
-    // Find image by id
-    $image = DB::selectOne("SELECT * FROM product_images WHERE id = ?", [$id]);
 
-    if ($image) {
-        // Delete file from public/uploads/products
-        $filePath = public_path('uploads/products/' . $image->image);
-        if (file_exists($filePath)) {
-            unlink($filePath);
+    public function deleteImage($id)
+    {
+        // Find image by id
+        $image = DB::selectOne("SELECT * FROM product_images WHERE id = ?", [$id]);
+
+        if ($image) {
+            // Delete file from public/uploads/products
+            $filePath = public_path('uploads/products/' . $image->image);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            // Remove from database
+            DB::delete("DELETE FROM product_images WHERE id = ?", [$id]);
+
+            return response()->json(['success' => true]);
         }
 
-        // Remove from database
-        DB::delete("DELETE FROM product_images WHERE id = ?", [$id]);
-
-        return response()->json(['success' => true]);
+        return response()->json(['success' => false, 'message' => 'Image not found.'], 404);
     }
-
-    return response()->json(['success' => false, 'message' => 'Image not found.'], 404);
-}
 }

@@ -1,10 +1,15 @@
 @extends('layouts.auth')
 
-@section('title', 'Register')
+@section('title', 'Employee Registration')
 
 @section('content')
 <form method="POST" action="{{ route('register') }}" id="registerForm">
     @csrf
+    
+    <!-- Personal Information Section -->
+    <div class="section-title mb-3">
+        <h5>Personal Information</h5>
+    </div>
     
     <!-- Name Input -->
     <div class="form-group">
@@ -38,6 +43,139 @@
                 <strong>{{ $message }}</strong>
             </span>
         @enderror
+    </div>
+
+    <!-- NIC Input -->
+    <div class="form-group">
+        <div class="input-group">
+            <input type="text" class="form-control @error('nic') is-invalid @enderror" 
+                   placeholder="NIC Number" name="nic" value="{{ old('nic') }}" 
+                   required>
+            <span class="input-group-text">
+                <i class="fas fa-id-card"></i>
+            </span>
+        </div>
+        @error('nic')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+    </div>
+
+    <!-- Position -->
+    <div class="form-group">
+        <div class="input-group">
+            <select class="form-control @error('position') is-invalid @enderror" 
+                    name="position" required>
+                <option value="">Select Position</option>
+                @foreach($roles as $role)
+                    <option value="{{ $role->role }}" {{ old('position') == $role->id ? 'selected' : '' }}>
+                        {{ ucfirst($role->role) }}
+                    </option>
+                @endforeach
+            </select>
+            <span class="input-group-text">
+                <i class="fas fa-briefcase"></i>
+            </span>
+        </div>
+        @error('position')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+    </div>
+
+    <!-- Phone Number -->
+    <div class="form-group">
+        <div class="input-group">
+            <input type="tel" class="form-control @error('phone') is-invalid @enderror" 
+                   placeholder="Phone Number" name="phone" value="{{ old('phone') }}">
+            <span class="input-group-text">
+                <i class="fas fa-phone"></i>
+            </span>
+        </div>
+        @error('phone')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+    </div>
+
+    <!-- Address Section -->
+    <div class="section-title mb-3 mt-4">
+        <h5>Address Information</h5>
+    </div>
+
+    <!-- Address Line 1 -->
+    <div class="form-group">
+        <div class="input-group">
+            <input type="text" class="form-control @error('address_line1') is-invalid @enderror" 
+                   placeholder="Address Line 1" name="address_line1" value="{{ old('address_line1') }}" 
+                   required>
+            <span class="input-group-text">
+                <i class="fas fa-map-marker-alt"></i>
+            </span>
+        </div>
+        @error('address_line1')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+    </div>
+
+    <!-- Address Line 2 -->
+    <div class="form-group">
+        <div class="input-group">
+            <input type="text" class="form-control @error('address_line2') is-invalid @enderror" 
+                   placeholder="Address Line 2" name="address_line2" value="{{ old('address_line2') }}">
+            <span class="input-group-text">
+                <i class="fas fa-map-marker-alt"></i>
+            </span>
+        </div>
+        @error('address_line2')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+    </div>
+
+    <!-- City -->
+    <div class="form-group">
+        <div class="input-group">
+            <input type="text" class="form-control @error('city') is-invalid @enderror" 
+                   placeholder="City" name="city" value="{{ old('city') }}" 
+                   required>
+            <span class="input-group-text">
+                <i class="fas fa-city"></i>
+            </span>
+        </div>
+        @error('city')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+    </div>
+
+    <!-- Postal Code -->
+    <div class="form-group">
+        <div class="input-group">
+            <input type="text" class="form-control @error('postal_code') is-invalid @enderror" 
+                   placeholder="Postal Code" name="postal_code" value="{{ old('postal_code') }}" 
+                   required>
+            <span class="input-group-text">
+                <i class="fas fa-mail-bulk"></i>
+            </span>
+        </div>
+        @error('postal_code')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+    </div>
+    
+    <!-- Password Section -->
+    <div class="section-title mb-3 mt-4">
+        <h5>Account Security</h5>
     </div>
     
     <!-- Password Input -->
@@ -109,6 +247,13 @@
 </form>
 
 <style>
+    .section-title {
+        color: #E7592B;
+        font-weight: 600;
+        border-bottom: 2px solid #E7592B;
+        padding-bottom: 5px;
+    }
+    
     .password-strength {
         transition: all 0.3s ease;
     }
@@ -140,6 +285,20 @@
     
     .custom-control-label a:hover {
         color: #E7592B !important;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+    }
+
+    .form-control:focus {
+        border-color: #E7592B;
+        box-shadow: 0 0 0 0.2rem rgba(231, 89, 43, 0.25);
     }
 </style>
 

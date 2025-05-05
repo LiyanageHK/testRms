@@ -14,7 +14,7 @@
             <div class="footer-links" style="margin-top: 100px;padding-left: 90px;">
                 <h3 style="color: #E7592B">Quick Links</h3>
                 <ul>
-                    <li><a href="{{ route('home') }}" >Home</a></li>
+                    <li><a href="{{ route('welcome') }}" >Home</a></li>
                     <li><a href="{{ route('menu') }}">Menu</a></li>
                     <li><a href="{{ route('about') }}">About Us</a></li>
                     <li><a href="{{ route('contact') }}">Contact Us</a></li>

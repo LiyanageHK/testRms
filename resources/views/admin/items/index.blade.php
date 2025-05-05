@@ -41,10 +41,7 @@
                         <td style="padding: 12px;">Rs. {{ number_format($item->price, 2) }}</td>
                         <td style="padding: 12px;">{{ $item->description }}</td>
                         <td style="padding: 12px; text-align: right;">
-                            <a href="{{ url('admin/items/edit/'.$item->id) }}" 
-                               style="display: inline-block; background-color: #6c757d; color: white; text-decoration: none; padding: 6px 12px; border-radius: 5px; font-size: 14px; margin-left: 5px;">
-                                <i class="fas fa-eye"></i> View
-                            </a>
+                            
                             <a href="{{ url('admin/items/edit/'.$item->id) }}" 
                                style="display: inline-block; background-color: #0d6efd; color: white; text-decoration: none; padding: 6px 12px; border-radius: 5px; font-size: 14px; margin-left: 5px;">
                                 <i class="fas fa-edit"></i> Edit

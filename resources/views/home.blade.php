@@ -18,6 +18,10 @@
         <div>
             <h1 class="display-6 mb-0">Welcome Back, {{ Auth::user()->name }}!</h1>
             <p class="text-muted">Here's what's happening in your restaurant today.</p>
+
+            
+
+
         </div>
         <div class="text-end">
             <div class="clock-container">
@@ -120,7 +124,7 @@
     </div>
 
     <!-- Charts Row -->
-    <div class="row g-4 mb-4">
+    <!--<div class="row g-4 mb-4">
         <div class="col-md-8">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
@@ -158,7 +162,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
 
     <!-- Quick Actions -->
     <div class="row g-4 mb-4">
